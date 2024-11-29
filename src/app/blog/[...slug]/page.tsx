@@ -69,7 +69,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
             dateTime={blog.date}
             className="block text-sm text-muted-foreground"
           >
-            Published on {formatDate(blog.date)}
+            Publicado el {formatDate(blog.date)}
           </time>
         )}
 
@@ -113,7 +113,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
             className={cn(buttonVariants({ variant: "ghost" }))}
           >
             <ChevronLeft className="mr-2 size-4" />
-            See all Blogs
+            Ver todas las entradas
           </Link>
         </div>
       </div>

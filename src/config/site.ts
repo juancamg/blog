@@ -6,9 +6,7 @@ export const siteConfig = {
   author: "juancamg",
   authorImage: authorAvatar,
   social: {
-    github: "https://github.com/juancamg",
-    twitter: "https://twitter.com",
-    facebook: "https://facebook.com",
+    github: "https://github.com/juancamg",    
   },
 };
 
