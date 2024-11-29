@@ -1,12 +1,12 @@
-import authorAvatar from "../../public/images/author/devbertskie.png";
+import authorAvatar from "../../public/images/author/juancamg.png";
 export const siteConfig = {
-  name: "Mdx Blog Template",
+  name: "/@xhetic",
   description:
-    "MDX Blog Template is a simple implementation of a markdown static blog. Built with Next.js 14 and velite js.",
-  author: "devbertskie",
+    "Blog de juancamg /@xhetic, donde comparto mis experiencias y conocimientos en ciberseguridad.",
+  author: "juancamg",
   authorImage: authorAvatar,
   social: {
-    github: "https://github.com/devbertskie",
+    github: "https://github.com/juancamg",
     twitter: "https://twitter.com",
     facebook: "https://facebook.com",
   },

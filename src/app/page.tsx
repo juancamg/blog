@@ -1,50 +1,66 @@
-import { buttonVariants } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
-import { SOCIALS } from "@/constants";
-import { cn } from "@/lib/utils";
+import React from "react";
+import { Metadata } from "next";
+import PageHeader from "@/components/page-header";
+import { blogs as allBlogs } from "#site/content";
+import Image from "next/image";
 import Link from "next/link";
+import { formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Xhetic blog",
+};
 
 export default function Home() {
+  const blogs = allBlogs
+    .filter((blog) => blog.published)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return (
-    <section className="space-y-6 pb-8 md:pb-12 md:pt-10 lg:py-32">
-      <div className="container mt-6 flex max-w-5xl flex-col items-center gap-4 text-center xl:mt-0">
-        <div className="flex items-center space-x-2">
-          {SOCIALS.map((social) => (
-            <Link
-              key={social.label}
-              href={social.path}
-              rel="noreferrer"
-              target="_blank"
-              className={cn(
-                buttonVariants({ variant: "ghost" }),
-                "text-primary px-0 hover:bg-primary transition-colors rounded-full p-2 size-8 bg-primary/80",
-              )}
+    <div className="container max-w-4xl py-6 lg:py-10">
+      <PageHeader
+        title="Xhetic blog"
+        description="Blog sobre writteups, retos y soluciones de ciberseguridad"
+      />
+      <hr className="my-8" />
+
+      {blogs.length ? (
+        <div className="grid gap-10 sm:grid-cols-2">
+          {blogs.map((blog) => (
+            <article
+              key={blog.slug}
+              className="group relative flex flex-col space-y-2"
             >
-              <social.icon className="size-6" />
-              <span className="sr-only">{social.label}</span>
-            </Link>
+              {blog.image && (
+                <Image
+                  src={blog.image}
+                  alt={blog.title}
+                  width={804}
+                  height={452}
+                  className="border bg-muted transition-colors"
+                />
+              )}
+
+              <h2 className="text-2xl font-extrabold text-primary">
+                {blog.title}
+              </h2>
+              {blog.description && (
+                <p className="text-muted-foreground">{blog.description}</p>
+              )}
+
+              {blog.date && (
+                <p className="text-sm text-muted-foreground">
+                  {formatDate(blog.date)}
+                </p>
+              )}
+
+              <Link href={blog.slug} className="absolute inset-0">
+                <span className="sr-only">Ver mas</span>
+              </Link>
+            </article>
           ))}
         </div>
-        <h1 className="text-3xl capitalize sm:text-5xl md:text-6xl lg:text-7xl">
-          A personal Blog template using{" "}
-          <span className="font-code text-yellow-300">Mdx</span> and{" "}
-          <span className="font-code text-primary">NextJs14</span>
-        </h1>
-        <p className="max-w-2xl leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-          {siteConfig.description}
-        </p>
-        <div className="space-x-4">
-          <Link
-            href="/blog"
-            className={cn(
-              buttonVariants({ size: "lg", variant: "secondary" }),
-              "border",
-            )}
-          >
-            🎉My Blog
-          </Link>
-        </div>
-      </div>
-    </section>
+      ) : (
+        <p>No se han encontrado entradas</p>
+      )}
+    </div>
   );
 }
