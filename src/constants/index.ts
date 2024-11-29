@@ -1,6 +1,6 @@
 import { Icons } from "@/components/icons";
 import { siteConfig } from "@/config/site";
-import { Bot, Rss } from "lucide-react";
+import { Bot } from "lucide-react";
 
 export const NAV_LIST = [
   { label: "About", path: "https://portfolio-juancamgs-projects.vercel.app/", icon: Bot },
