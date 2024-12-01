@@ -16,6 +16,7 @@ const blogs = defineCollection({
       slug: s.path(),
       title: s.string().max(99),
       description: s.string().max(999),
+      category: s.string().default("General"),
       tag: s.array(s.string()).optional(),
       date: s.isodate(),
       published: s.boolean().default(true),

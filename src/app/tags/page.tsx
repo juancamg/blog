@@ -23,7 +23,8 @@ export default function TagsPage() {
 
   return (
     <div className="container max-w-4xl py-6 lg:py-10">
-      <h1 className="text-4xl font-bold mb-4">Tags</h1>
+      <h1 className="text-4xl font-bold mb-4">Etiquetas</h1>
+      <p className="mb-4 text-lg text-gray-700">Selecciona las etiquetas para filtrar las publicaciones</p>
       <div className="flex flex-wrap gap-2 mb-4">
         {tags.map(tag => (
           <button
@@ -36,15 +37,15 @@ export default function TagsPage() {
         ))}
       </div>
       <div className="mb-8 flex items-center">
-        <hr className="flex-grow border-t border-gray-300" />
+        <hr className="flex-grow border-t border-gray-300 opacity-50" />
         <button
           onClick={() => setSelectedTags([])}
-          className="ml-4 px-3 py-1 rounded-full text-white border flex items-center"
+          className="mx-4 px-3 py-1 rounded-full text-white border flex items-center"
           style={{ backgroundColor: '#c084fc' }}
         >
           <FontAwesomeIcon icon={faBroom} className="mr-2" /> Limpiar
         </button>
-        <hr className="flex-grow border-t border-gray-300" />
+        <hr className="flex-grow border-t border-gray-300 opacity-50" />
       </div>
       <div className="grid gap-10 sm:grid-cols-2">
         {filteredBlogs.map(blog => (
@@ -59,9 +60,6 @@ export default function TagsPage() {
             <h2 className="text-2xl font-extrabold text-primary">{blog.title}</h2>
             {blog.description && (
               <p className="text-muted-foreground">{blog.description}</p>
-            )}
-            {blog.date && (
-              <p className="text-sm text-muted-foreground">{new Date(blog.date).toLocaleDateString()}</p>
             )}
             <Link href={blog.slug} className="absolute inset-0">
               <span className="sr-only">Read more</span>
