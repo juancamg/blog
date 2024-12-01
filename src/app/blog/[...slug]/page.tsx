@@ -1,95 +1,122 @@
 import React from "react";
 import { Metadata } from "next";
-import PageHeader from "@/components/page-header";
 import { blogs as allBlogs } from "#site/content";
+import { cn, formatDate } from "@/lib/utils";
+import "@/styles/mdx.css";
+
 import Image from "next/image";
+import { siteConfig } from "@/config/site";
+import { Mdx } from "@/components/mdx-component";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
-export const metadata: Metadata = {
-  title: "Xhetic Shadows",
-};
+interface BlogPageItemProps {
+  params: {
+    slug: string[];
+  };
+}
 
-export default function Home() {
-  const blogs = allBlogs.filter((blog) => blog.published);
-  const latestBlogs = blogs
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 4);
-  const featuredBlogs = blogs
-    .filter((blog) => blog.featured)
-    .slice(0, 4);
+async function getBlogFromParams(params: BlogPageItemProps["params"]) {
+  const slug = params?.slug.join("/");
+  const blog = allBlogs.find((blog) => blog.slugAsParams === slug);
+
+  if (!blog) {
+    return null;
+  }
+
+  return blog;
+}
+
+export async function generateMetadata({
+  params,
+}: BlogPageItemProps): Promise<Metadata> {
+  const blog = await getBlogFromParams(params);
+
+  if (!blog) {
+    return {};
+  }
+
+  return {
+    title: blog.title,
+    description: blog.description,
+    authors: {
+      name: blog.author,
+    },
+  };
+}
+
+export async function generateStaticParams(): Promise<
+  BlogPageItemProps["params"][]
+> {
+  return allBlogs.map((blog) => ({
+    slug: blog.slugAsParams.split("/"),
+  }));
+}
+
+export default async function BlogPageItem({ params }: BlogPageItemProps) {
+  const blog = await getBlogFromParams(params);
+
+  if (!blog) {
+    return {};
+  }
 
   return (
-    <div className="container max-w-4xl py-6 lg:py-10">
-      <PageHeader
-        title="Xhetic Shadows"
-        description="Explorando los secretos ocultos de la ciberseguridad: writeups, retos y más"
-      />
-      <hr className="my-8" />
-      <h2 className="text-3xl font-bold mb-4">Últimos Posts</h2>
-      {latestBlogs.length ? (
-        <div className="grid gap-10 sm:grid-cols-2">
-          {latestBlogs.map((blog) => (
-            <article key={blog.slug} className="group relative flex flex-col space-y-2">
-              {blog.image && (
-                <Image
-                  src={blog.image}
-                  alt={blog.title}
-                  width={804}
-                  height={452}
-                  className="border bg-muted transition-colors"
-                />
-              )}
-              <h2 className="text-2xl font-extrabold text-primary">
-                {blog.title}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {formatDate(blog.date)}
+    <article className="container relative max-w-3xl py-6 lg:py-10">
+      <div>
+        {blog.date && (
+          <time
+            dateTime={blog.date}
+            className="block text-sm text-muted-foreground"
+          >
+            Publicado el {formatDate(blog.date)}
+          </time>
+        )}
+
+        <h1 className="mt-2 inline-block text-4xl font-bold capitalize leading-tight text-primary lg:text-5xl">
+          {blog.title}
+        </h1>
+
+        {blog.author && (
+          <div className="mt-4 flex space-x-4">
+            <Image
+              src={siteConfig.authorImage}
+              alt={blog.author}
+              width={42}
+              height={42}
+              className="rounded-full bg-white"
+            />
+            <div className="flex-1 text-left leading-tight">
+              <p className="font-medium">{blog.author}</p>
+              <p className="text-[12px] text-muted-foreground">
+                @{blog.author}
               </p>
-              <Link href={blog.slug} className="absolute inset-0">
-                <span className="sr-only">Ver mas</span>
-              </Link>
-            </article>
-          ))}
+            </div>
+          </div>
+        )}
+
+        {blog.image && (
+          <Image
+            src={blog.image}
+            alt={blog.title}
+            width={720}
+            height={405}
+            priority
+            className="my-8 border bg-muted transition-colors"
+          />
+        )}
+        <Mdx code={blog.body} />
+        <hr className="mt-12" />
+        <div className="flex justify-center py-6 lg:py-10">
+          <Link
+            href="/blog"
+            className={cn(buttonVariants({ variant: "ghost" }))}
+          >
+            <ChevronLeft className="mr-2 size-4" />
+            Ver todas las entradas
+          </Link>
         </div>
-      ) : (
-        <p>No se han encontrado entradas</p>
-      )}
-      <hr className="my-8" />
-      <h2 className="text-3xl font-bold mt-10 mb-4">Posts Destacados</h2>
-      {featuredBlogs.length ? (
-        <div className="grid gap-10 sm:grid-cols-2 mb-10">
-          {featuredBlogs.map((blog) => (
-            <article key={blog.slug} className="group relative flex flex-col space-y-2">
-              {blog.image && (
-                <Image
-                  src={blog.image}
-                  alt={blog.title}
-                  width={804}
-                  height={452}
-                  className="border bg-muted transition-colors"
-                />
-              )}
-              <h2 className="text-2xl font-extrabold text-primary">
-                {blog.title}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {formatDate(blog.date)}
-              </p>
-              <Link href={blog.slug} className="absolute inset-0">
-                <span className="sr-only">Ver mas</span>
-              </Link>
-            </article>
-          ))}
-        </div>
-      ) : (
-        <p>No se han encontrado entradas</p>
-      )}
-      <div className="flex justify-center mt-10">
-        <Link href="/blog" className="px-4 py-2 bg-[#c084fc] text-white rounded-md transition-transform transform hover:scale-105 active:scale-95">
-          Ver todas las publicaciones
-        </Link>
       </div>
-    </div>
+    </article>
   );
 }
