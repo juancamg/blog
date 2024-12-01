@@ -1,9 +1,9 @@
 import authorAvatar from "../../public/images/author/juancamg.png";
 export const siteConfig = {
-  name: "/@xhetic",
+  name: "! xhetic .. /",
   description:
-    "Blog de juancamg /@xhetic, donde comparto mis experiencias y conocimientos en ciberseguridad.",
-  author: "juancamg",
+    "Blog de jcarlosmaceras /@xhetic, donde comparto mis experiencias y conocimientos en ciberseguridad.",
+  author: "xhetic",
   authorImage: authorAvatar,
   social: {
     github: "https://github.com/juancamg",    

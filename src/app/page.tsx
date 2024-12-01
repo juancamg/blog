@@ -7,7 +7,7 @@ import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Xhetic blog",
+  title: "Xhetic Shadows",
 };
 
 export default function Home() {
@@ -17,8 +17,8 @@ export default function Home() {
   return (
     <div className="container max-w-4xl py-6 lg:py-10">
       <PageHeader
-        title="Xhetic blog"
-        description="Blog sobre writteups, retos y soluciones de ciberseguridad"
+        title="Xhetic Shadows"
+        description="Explorando los secretos ocultos de la ciberseguridad: writeups, retos y más"
       />
       <hr className="my-8" />
 
