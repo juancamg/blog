@@ -84,6 +84,9 @@ export default function Home() {
               <h2 className="text-2xl font-extrabold text-primary">
                 {blog.title}
               </h2>
+              {blog.description && (
+                <p className="text-sm text-muted-foreground">{blog.description}</p>
+              )}
               <Link href={blog.slug} className="absolute inset-0">
                 <span className="sr-only">Ver mas</span>
               </Link>
