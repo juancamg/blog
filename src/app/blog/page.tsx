@@ -12,7 +12,7 @@ const CATEGORIES = [
   "Todas las categorías",
   "Writeups & Retos",
   "Pentesting",
-  "Ingeniería Inversa",
+  "OSINT",
   "Forense Digital",
   "Criptografía",
   "Noticias & Tendencias",
@@ -87,7 +87,13 @@ export default function Blog() {
                 <p className="text-sm text-muted-foreground">{blog.description}</p>
               )}
               {blog.date && (
-                <p className="text-sm text-muted-foreground">{new Date(blog.date).toLocaleDateString()}</p>
+                <p className="text-sm text-muted-foreground">
+                  {new Date(blog.date).toLocaleDateString("es-ES", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
               )}
               <Link href={blog.slug} className="absolute inset-0">
                 <span className="sr-only">Ver más</span>

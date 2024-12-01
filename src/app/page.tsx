@@ -4,7 +4,6 @@ import PageHeader from "@/components/page-header";
 import { blogs as allBlogs } from "#site/content";
 import Image from "next/image";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Xhetic Shadows",
