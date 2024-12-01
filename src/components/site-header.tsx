@@ -6,7 +6,6 @@ import { siteConfig } from "@/config/site";
 import HeaderNav from "@/components/header-nav";
 import { Button } from "@/components/ui/button";
 import MobileNav from "@/components/mobile-nav";
-import { Icons } from "./icons";
 
 export default function SiteHeader() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
