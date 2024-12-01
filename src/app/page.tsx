@@ -11,9 +11,14 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const blogs = allBlogs
-    .filter((blog) => blog.published)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const blogs = allBlogs.filter((blog) => blog.published);
+  const latestBlogs = blogs
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 4);
+  const featuredBlogs = blogs
+    .filter((blog) => blog.featured)
+    .slice(0, 4);
+
   return (
     <div className="container max-w-4xl py-6 lg:py-10">
       <PageHeader
@@ -21,10 +26,10 @@ export default function Home() {
         description="Explorando los secretos ocultos de la ciberseguridad: writeups, retos y más"
       />
       <hr className="my-8" />
-
-      {blogs.length ? (
+      <h2 className="text-3xl font-bold mb-4">Últimos Posts</h2>
+      {latestBlogs.length ? (
         <div className="grid gap-10 sm:grid-cols-2">
-          {blogs.map((blog) => (
+          {latestBlogs.map((blog) => (
             <article
               key={blog.slug}
               className="group relative flex flex-col space-y-2"
@@ -38,20 +43,47 @@ export default function Home() {
                   className="border bg-muted transition-colors"
                 />
               )}
-
               <h2 className="text-2xl font-extrabold text-primary">
                 {blog.title}
               </h2>
-              {blog.description && (
-                <p className="text-muted-foreground">{blog.description}</p>
-              )}
+              <Link href={blog.slug} className="absolute inset-0">
+                <span className="sr-only">Ver mas</span>
+              </Link>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p>No se han encontrado entradas</p>
+      )}
 
-              {blog.date && (
-                <p className="text-sm text-muted-foreground">
-                  {formatDate(blog.date)}
-                </p>
-              )}
+      <div className="flex justify-center mt-10">
+        <Link href="/blog" className="px-4 py-2 bg-[#c084fc] text-white rounded-md transition-transform transform hover:scale-105 active:scale-95">
+          Ver todas las publicaciones
+        </Link>
+      </div>
 
+      <hr className="my-8" />
+
+      <h2 className="text-3xl font-bold mt-10 mb-4">Posts Destacados</h2>
+      {featuredBlogs.length ? (
+        <div className="grid gap-10 sm:grid-cols-2 mb-10">
+          {featuredBlogs.map((blog) => (
+            <article
+              key={blog.slug}
+              className="group relative flex flex-col space-y-2"
+            >
+              {blog.image && (
+                <Image
+                  src={blog.image}
+                  alt={blog.title}
+                  width={804}
+                  height={452}
+                  className="border bg-muted transition-colors"
+                />
+              )}
+              <h2 className="text-2xl font-extrabold text-primary">
+                {blog.title}
+              </h2>
               <Link href={blog.slug} className="absolute inset-0">
                 <span className="sr-only">Ver mas</span>
               </Link>
