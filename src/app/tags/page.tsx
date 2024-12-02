@@ -9,7 +9,11 @@ import { faBroom } from "@fortawesome/free-solid-svg-icons";
 export default function TagsPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const tags = Array.from(new Set(allBlogs.flatMap(blog => blog.tag || [])));
+  // Filtrar las publicaciones que están publicadas
+  const publishedBlogs = allBlogs.filter(blog => blog.published === true);
+
+  // Generar la lista de etiquetas solo de las publicaciones publicadas
+  const tags = Array.from(new Set(publishedBlogs.flatMap(blog => blog.tag || [])));
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev =>
@@ -18,8 +22,8 @@ export default function TagsPage() {
   };
 
   const filteredBlogs = selectedTags.length
-    ? allBlogs.filter(blog => selectedTags.every(tag => blog.tag?.includes(tag)))
-    : allBlogs;
+    ? publishedBlogs.filter(blog => selectedTags.every(tag => blog.tag?.includes(tag)))
+    : publishedBlogs;
 
   return (
     <div className="container max-w-4xl py-6 lg:py-10">

@@ -10,10 +10,10 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const CATEGORIES = [
   "Todas las categorías",
-  "Writeups & Retos",
-  "Pentesting",
+  "Writeups",
+  "Retos",
   "OSINT",
-  "Forense Digital",
+  "Análisis Forense",
   "Criptografía",
   "Noticias & Tendencias",
   "Herramientas",
@@ -27,7 +27,8 @@ export default function Blog() {
   const filteredBlogs = allBlogs.filter((blog) => {
     const matchesSearchTerm = blog.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "Todas las categorías" || blog.category === selectedCategory;
-    return matchesSearchTerm && matchesCategory;
+    const isPublished = blog.published === true;
+    return matchesSearchTerm && matchesCategory && isPublished;
   });
 
   return (
