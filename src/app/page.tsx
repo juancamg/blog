@@ -39,7 +39,7 @@ export default function Home() {
                   alt={blog.title}
                   width={804}
                   height={452}
-                  className="border bg-muted transition-colors"
+                  className="border bg-muted transition-transform transform group-hover:scale-105"
                 />
               )}
               <h2 className="text-2xl font-extrabold text-primary">
@@ -77,7 +77,7 @@ export default function Home() {
                   alt={blog.title}
                   width={804}
                   height={452}
-                  className="border bg-muted transition-colors"
+                  className="border bg-muted transition-transform transform group-hover:scale-105"
                 />
               )}
               <h2 className="text-2xl font-extrabold text-primary">

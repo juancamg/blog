@@ -46,14 +46,6 @@ export async function generateMetadata({
   };
 }
 
-export async function generateStaticParams(): Promise<
-  BlogPageItemProps["params"][]
-> {
-  return allBlogs.map((blog) => ({
-    slug: blog.slugAsParams.split("/"),
-  }));
-}
-
 export default async function BlogPageItem({ params }: BlogPageItemProps) {
   const blog = await getBlogFromParams(params);
 
@@ -78,20 +70,35 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
         </h1>
 
         {blog.author && (
-          <div className="mt-4 flex space-x-4">
-            <Image
-              src={siteConfig.authorImage}
-              alt={blog.author}
-              width={42}
-              height={42}
-              className="rounded-full bg-white"
-            />
-            <div className="flex-1 text-left leading-tight">
-              <p className="font-medium">{blog.author}</p>
-              <p className="text-[12px] text-muted-foreground">
-                @{blog.author}
-              </p>
+          <div className="mt-4 flex justify-between items-center">
+            <div className="flex space-x-4">
+              <Image
+                src={siteConfig.authorImage}
+                alt={blog.author}
+                width={42}
+                height={42}
+                className="rounded-full bg-white"
+              />
+              <div className="flex-1 text-left leading-tight">
+                <p className="font-medium">{blog.author}</p>
+                <p className="text-[12px] text-muted-foreground">
+                  @{blog.author}
+                </p>
+              </div>
             </div>
+        
+            {blog.tag && (
+              <div className="flex space-x-2">
+                {blog.tag.slice(0, 3).map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-block bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-sm "
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -107,13 +114,12 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
         )}
         <Mdx code={blog.body} />
         <hr className="mt-12" />
-        <div className="flex justify-center py-6 lg:py-10">
-          <Link
-            href="/blog"
-            className={cn(buttonVariants({ variant: "ghost" }))}
-          >
-            <ChevronLeft className="mr-2 size-4" />
-            Ver todas las entradas
+                <div className="flex justify-center py-6 lg:py-10">
+          <Link href="/blog" className={cn(buttonVariants({ variant: "ghost" }))} legacyBehavior>
+            <a className="flex items-center">
+              <ChevronLeft className="mr-2 size-4" />
+              Ver todas las entradas
+            </a>
           </Link>
         </div>
       </div>
