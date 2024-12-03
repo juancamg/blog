@@ -78,7 +78,7 @@ export default function Blog() {
                   alt={blog.title}
                   width={804}
                   height={452}
-                  className="border bg-muted transition-colors"
+                  className="border bg-muted transition-transform transform group-hover:scale-105 group-hover:border-[#c084fc]"
                 />
               )}
               <h2 className="text-xl font-bold text-primary">

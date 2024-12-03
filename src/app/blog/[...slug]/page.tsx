@@ -109,7 +109,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
             width={720}
             height={405}
             priority
-            className="my-8 border bg-muted transition-colors"
+            className="my-8 border bg-muted transition-colors "
           />
         )}
         <Mdx code={blog.body} />
