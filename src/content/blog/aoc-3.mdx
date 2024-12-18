@@ -1,0 +1,137 @@
+---
+title: "AoC 2024: Día 3 - Análisis de Logs 🔍"
+description: "Resolvemos el reto del día 3 en el Advent of Cyber 2024 organizado por TryHackMe."
+image: "/images/blog/advent-of-cyber-2024/thumbnails/day3.png"
+date: "2024-12-03"
+author: "xhetic"
+tag: ["TryHackMe", "Principiante", "Logs", "ELK", "Advent of Cyber"]
+category: "Writeups"
+featured: false
+---
+
+## 🌟 Introducción
+
+En el reto del **Día 3**, exploraremos el análisis de logs con ELK y recrearemos un ataque para identificar vulnerabilidades en una aplicación web.
+
+Room: [Advent of Cyber 2024](https://tryhackme.com/r/room/adventofcyber2024)
+
+---
+
+### 🎯 Objetivos de aprendizaje
+
+1. Comprender cómo analizar logs usando Kibana (parte del stack ELK).
+2. Aprender a investigar vulnerabilidades de ejecución remota de código (RCE) mediante subida de archivos.
+3. Reforzar habilidades prácticas en ciberseguridad.
+
+---
+
+## 🛠️ Parte 1: Teoría y fundamentos
+
+Antes de comenzar con la práctica, repasemos algunos conceptos clave que nos ayudarán a comprender mejor lo que haremos.
+
+### 🔍 ¿Qué es ELK?
+
+ELK es un conjunto de herramientas que facilita la recopilación, análisis y visualización de logs:
+
+- **Elasticsearch:** Almacena y busca grandes volúmenes de datos de manera eficiente.
+- **Logstash:** Procesa y transporta los logs a Elasticsearch.
+- **Kibana:** Proporciona una interfaz gráfica para explorar y analizar los datos.
+
+En este reto, usaremos **Kibana** para investigar un ataque mediante logs.
+
+### 📄 Vulnerabilidades de subida de archivos
+
+La funcionalidad de subir archivos en sitios web puede ser peligrosa si no se implementa correctamente. Algunos riesgos incluyen:
+
+- **Ejecución remota de código (RCE):** Subir scripts maliciosos que el servidor ejecuta.
+- **Robo de datos:** Subir archivos diseñados para acceder a información sensible.
+
+El ataque que recrearemos aprovecha una vulnerabilidad en la validación de archivos subidos.
+
+---
+
+## 🕵️‍♂️ Parte 2: Investigación del ataque (Operación Blue)
+
+### Iniciando la investigación
+
+Inicio la máquina virtual desde la tarea de TryHackMe y configuro el archivo `hosts` con el siguiente comando para redirigir el dominio local:
+
+```bash
+echo "<IP_DE_LA_MÁQUINA> frostypines.thm" >> /etc/hosts
+```
+
+Con esto listo, accedo a Kibana en la URL `http://<IP_DE_LA_MÁQUINA>:5601`.
+
+### Explorando los logs
+
+En Kibana, voy a la sección **Discover** y selecciono la colección `frostypines-resorts`. Ajusto el filtro de tiempo para revisar los logs entre **11:30 y 12:00 del 3 de octubre de 2024**.
+
+Ahora, ¿qué busco? La tarea menciona un archivo sospechoso llamado `shell.php`. Uso la barra de búsqueda para localizarlo:
+
+```kql
+message: "shell.php"
+```
+
+¡Bingo! Encuentro la ruta donde se subió la web shell: `/media/images/rooms/shell.php`. También descubro que la IP atacante es `10.11.83.34`. Con esta información, ya tengo una idea clara de cómo se llevó a cabo el ataque.
+
+![Captura de pantalla](/images/blog/advent-of-cyber-2024/day3-img1.png)
+---
+
+## 🚩 Parte 3: Recreación del ataque (Operación Red)
+
+### Explorando el sitio web
+
+Accedo a la página principal `http://frostypines.thm` y hago un análisis general para entender cómo está construida. ¿Qué descubro? Probando un poco, encuentro esta ruta interesante: `http://frostypines.thm/admin/users.php`. ¡Vaya! Aquí están los usuarios registrados de la base de datos.
+
+![Captura de pantalla](/images/blog/advent-of-cyber-2024/day3-img2.png)
+
+### Probando credenciales
+
+¿Y si intento con contraseñas por defecto? Pruebo combinaciones típicas como `admin`, `root`, `1234`... ¡Y voilà! La contraseña `admin` funciona. Ahora estoy dentro como administrador 🎉. Parece que la seguridad no es su fuerte...
+
+### Subiendo la web shell
+
+Desde el panel de administrador, veo que puedo añadir nuevas habitaciones al hotel. En el formulario, hay un campo para subir imágenes. Aquí aprovecho para subir un archivo malicioso llamado `shell.php` en lugar de una imagen legítima. Guardo los cambios y el archivo queda alojado en el servidor.
+
+![Captura de pantalla](/images/blog/advent-of-cyber-2024/day3-img3.png)
+
+### Accediendo a la shell
+
+Con el archivo subido, voy a la lista de habitaciones en la pestaña `rooms`. Analizo la ruta de las imágenes y veo algo como esto:
+
+```html
+src="http://frostypines.thm/media/images/rooms/1.jpg"
+```
+
+![Captura de pantalla](/images/blog/advent-of-cyber-2024/day3-img4.png)
+
+Sustituyo `1.jpg` por `shell.php` en la URL:
+
+```
+http://frostypines.thm/media/images/rooms/shell.php
+```
+
+¡Funciona! Ahora tengo acceso a la shell. Pruebo algunos comandos como `whoami` para confirmar que tengo control.
+
+![Captura de pantalla](/images/blog/advent-of-cyber-2024/day3-img5.png)
+
+### Encontrando la bandera
+
+Exploro el sistema con el comando `ls` y encuentro un archivo llamado `flag.txt`. Lo leo con:
+
+```bash
+cat flag.txt
+```
+![Captura de pantalla](/images/blog/advent-of-cyber-2024/day3-img6.png)
+
+🎉 **Resultado:** La bandera es `THM{Gl1tch_Was_H3r3}`.
+
+---
+
+## 🎯 Conclusión
+
+Hoy he aprendido a investigar un ataque utilizando herramientas de análisis de logs y he recreado un escenario práctico para entender cómo las vulnerabilidades en la subida de archivos pueden ser explotadas. Este conocimiento es esencial para proteger aplicaciones web y responder a incidentes de manera efectiva.
+
+🌟 ¡Sigue participando en los retos del Calendario de Adviento de Ciberseguridad 2024 para fortalecer tus habilidades! 💪
+
+¿Tienes alguna duda o sugerencia? ¡Déjame un comentario! 😊
