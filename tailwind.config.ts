@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-
 const { fontFamily } = require("tailwindcss/defaultTheme");
 
 const config = {
@@ -10,6 +9,7 @@ const config = {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
     "./src/content/**/*.{md,mdx}",
+    "./src/styles/globals.css",
   ],
   prefix: "",
   theme: {

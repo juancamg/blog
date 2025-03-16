@@ -3,7 +3,6 @@ import { Metadata } from "next";
 import { blogs as allBlogs } from "#site/content";
 import { cn, formatDate } from "@/lib/utils";
 import "@/styles/mdx.css";
-
 import Image from "next/image";
 import { siteConfig } from "@/config/site";
 import { Mdx } from "@/components/mdx-component";
@@ -11,14 +10,10 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
-interface BlogPageItemProps {
-  params: {
-    slug: string[];
-  };
-}
-
-async function getBlogFromParams(params: BlogPageItemProps["params"]) {
-  const slug = params?.slug.join("/");
+// Función para obtener el blog desde los parámetros
+async function getBlogFromParams(params: Promise<{ slug: string[] }>) {
+  const resolvedParams = await params; // Resolvemos el Promise
+  const slug = resolvedParams.slug.join("/");
   const blog = allBlogs.find((blog) => blog.slugAsParams === slug);
 
   if (!blog) {
@@ -28,15 +23,19 @@ async function getBlogFromParams(params: BlogPageItemProps["params"]) {
   return blog;
 }
 
+// Generar parámetros estáticos para las rutas dinámicas
 export async function generateStaticParams() {
   return allBlogs.map((blog) => ({
-    slug: blog.slugAsParams.split("/"), // Convierte el slug en un array para [...slug]
+    slug: blog.slugAsParams.split("/"),
   }));
 }
 
+// Generar metadatos para la página
 export async function generateMetadata({
   params,
-}: BlogPageItemProps): Promise<Metadata> {
+}: {
+  params: Promise<{ slug: string[] }>; // Cambiamos a Promise
+}): Promise<Metadata> {
   const blog = await getBlogFromParams(params);
 
   if (!blog) {
@@ -52,11 +51,16 @@ export async function generateMetadata({
   };
 }
 
-export default async function BlogPageItem({ params }: BlogPageItemProps) {
+// Componente de la página
+export default async function BlogPage({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>; // Cambiamos a Promise
+}) {
   const blog = await getBlogFromParams(params);
 
   if (!blog) {
-    return {};
+    return <div>No se encontró el blog</div>;
   }
 
   return (
@@ -92,13 +96,13 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
                 </p>
               </div>
             </div>
-        
+
             {blog.tag && (
               <div className="flex space-x-2">
                 {blog.tag.slice(0, 3).map((tag) => (
                   <span
                     key={tag}
-                    className="inline-block bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-sm "
+                    className="inline-block bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-sm"
                   >
                     {tag}
                   </span>
@@ -115,13 +119,17 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
             width={720}
             height={405}
             priority
-            className="my-8 border bg-muted transition-colors "
+            className="my-8 border bg-muted transition-colors"
           />
         )}
         <Mdx code={blog.body} />
         <hr className="mt-12" />
         <div className="flex justify-center py-6 lg:py-10">
-          <Link href="/blog" className={cn(buttonVariants({ variant: "ghost" }))} legacyBehavior>
+          <Link
+            href="/blog"
+            className={cn(buttonVariants({ variant: "ghost" }))}
+            legacyBehavior
+          >
             <a className="flex items-center">
               <ChevronLeft className="mr-2 size-4" />
               Ver todas las entradas
