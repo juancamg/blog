@@ -1,32 +1,38 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import PageHeader from "@/components/page-header";
-import { blogs as allBlogs } from "#site/content";
-import Image from "next/image";
-import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import React, { useState } from 'react';
+import PageHeader from '@/components/page-header';
+import { blogs as allBlogs } from '#site/content';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const CATEGORIES = [
-  "Todas las categorías",
-  "Writeups",
-  "Retos",
-  "OSINT",
-  "Análisis Forense",
-  "Criptografía",
-  "Noticias & Tendencias",
-  "Herramientas",
-  "General",
+  'Todas las categorías',
+  'Writeups',
+  'Retos',
+  'OSINT',
+  'Análisis Forense',
+  'Criptografía',
+  'Noticias & Tendencias',
+  'Herramientas',
+  'General',
 ];
 
 export default function Blog() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todas las categorías");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(
+    'Todas las categorías'
+  );
 
   const filteredBlogs = allBlogs.filter((blog) => {
-    const matchesSearchTerm = blog.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "Todas las categorías" || blog.category === selectedCategory;
+    const matchesSearchTerm = blog.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'Todas las categorías' ||
+      blog.category === selectedCategory;
     const isPublished = blog.published === true;
     return matchesSearchTerm && matchesCategory && isPublished;
   });
@@ -36,22 +42,25 @@ export default function Blog() {
       <PageHeader title="Todas las Publicaciones" />
       <hr className="my-8" />
 
-      <div className="flex flex-col sm:flex-row justify-between mb-8">
-        <div className="relative flex items-center w-full sm:w-auto mb-4 sm:mb-0">
-          <FontAwesomeIcon icon={faSearch} className="absolute left-3 text-gray-500" />
+      <div className="mb-8 flex flex-col justify-between sm:flex-row">
+        <div className="relative mb-4 flex w-full items-center sm:mb-0 sm:w-auto">
+          <FontAwesomeIcon
+            icon={faSearch}
+            className="absolute left-3 text-gray-500"
+          />
           <input
             type="text"
             placeholder="Buscar por título..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full sm:w-80 border border-gray-300 rounded-md bg-[#e9ddfc] text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#c084fc]"
+            className="w-full rounded-md border border-gray-300 bg-[#e9ddfc] py-2 pl-10 pr-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#c084fc] sm:w-80"
           />
         </div>
         <div className="flex items-center space-x-4">
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="pl-3 pr-10 py-2 w-full sm:w-60 border border-gray-300 rounded-md bg-[#e9ddfc] text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#c084fc]"
+            className="w-full rounded-md border border-gray-300 bg-[#e9ddfc] py-2 pl-3 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#c084fc] sm:w-60"
           >
             {CATEGORIES.map((category) => (
               <option key={category} value={category}>
@@ -59,7 +68,10 @@ export default function Blog() {
               </option>
             ))}
           </select>
-          <Link href="/tags" className="px-4 py-2 bg-[#c084fc] text-white rounded-md transition-transform transform hover:scale-105 active:scale-95">
+          <Link
+            href="/tags"
+            className="rounded-md bg-[#c084fc] px-4 py-2 text-white transition-transform hover:scale-105 active:scale-95"
+          >
             Etiquetas
           </Link>
         </div>
@@ -78,21 +90,21 @@ export default function Blog() {
                   alt={blog.title}
                   width={804}
                   height={452}
-                  className="border bg-muted transition-transform transform group-hover:scale-105 group-hover:border-[#c084fc]"
+                  className="border bg-muted transition-transform group-hover:scale-105 group-hover:border-[#c084fc]" 
                 />
               )}
-              <h2 className="text-xl font-bold text-primary">
-                {blog.title}
-              </h2>
+              <h2 className="text-xl font-bold text-primary">{blog.title}</h2>
               {blog.description && (
-                <p className="text-sm text-muted-foreground">{blog.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {blog.description}
+                </p>
               )}
               {blog.date && (
                 <p className="text-sm text-muted-foreground">
-                  {new Date(blog.date).toLocaleDateString("es-ES", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
+                  {new Date(blog.date).toLocaleDateString('es-ES', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
                   })}
                 </p>
               )}

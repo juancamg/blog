@@ -1,17 +1,17 @@
 ---
-title: "AoC 2024: Día 2 - Desenmascarando amenazas 🔓"
-description: "Resolvemos el reto del día 2 en el Advent of Cyber 2024 organizado por TryHackMe."
-image: "/images/blog/advent-of-cyber-2024/thumbnails/day2.png"
-date: "2024-12-02"
-author: "xhetic"
-tag: ["TryHackMe", "Principiante", "Logs", "ELK", "Advent of Cyber"]
-category: "Writeups"
+title: 'AoC 2024: Día 2 - Desenmascarando amenazas 🔓'
+description: 'Resolvemos el reto del día 2 en el Advent of Cyber 2024 organizado por TryHackMe.'
+image: '/images/blog/advent-of-cyber-2024/thumbnails/day2.png'
+date: '2024-12-02'
+author: 'xhetic'
+tag: ['TryHackMe', 'Principiante', 'Logs', 'ELK', 'Advent of Cyber']
+category: 'Writeups'
 featured: false
 ---
 
 ## 🕵️ Historia: ¿Quién está detrás del caos?
 
-Es diciembre, y el equipo del SOC de Wareville está al borde del colapso. Las alertas no dejan de llegar, y los analistas están exhaustos tratando de diferenciar entre actividades legítimas y posibles ataques. Una alerta enviada por la oficina del alcalde indica múltiples comandos PowerShell codificados ejecutados en sus sistemas el 1 de diciembre. La sospecha recae en el infame **Mayor Malware**, pero ¿es todo lo que parece? 
+Es diciembre, y el equipo del SOC de Wareville está al borde del colapso. Las alertas no dejan de llegar, y los analistas están exhaustos tratando de diferenciar entre actividades legítimas y posibles ataques. Una alerta enviada por la oficina del alcalde indica múltiples comandos PowerShell codificados ejecutados en sus sistemas el 1 de diciembre. La sospecha recae en el infame **Mayor Malware**, pero ¿es todo lo que parece?
 
 ¿Podrás ayudar al SOC a investigar este incidente y revelar la verdad detrás de estas actividades sospechosas?
 
@@ -21,7 +21,7 @@ Room: [Advent of Cyber 2024](https://tryhackme.com/r/room/adventofcyber2024)
 
 ### 🎯 Objetivos de aprendizaje
 
-1. Diferenciar entre *True Positives* (TP) y *False Positives* (FP).
+1. Diferenciar entre _True Positives_ (TP) y _False Positives_ (FP).
 2. Usar herramientas de monitoreo para analizar eventos en un marco de tiempo específico.
 3. Aplicar filtros y correlaciones para rastrear patrones sospechosos.
 4. Decodificar comandos PowerShell codificados para entender su propósito.
@@ -43,18 +43,18 @@ Room: [Advent of Cyber 2024](https://tryhackme.com/r/room/adventofcyber2024)
 
 ### Paso 2: Configura el marco de tiempo y añade columnas clave
 
-1. Ajusta el marco de tiempo al rango **1 de diciembre de 2024, 09:00 a 09:30**:  
-   - Haz clic en el selector de tiempo (arriba a la derecha).  
-   - Selecciona la pestaña **Absolute** y configura las fechas y horas exactas.  
+1. Ajusta el marco de tiempo al rango **1 de diciembre de 2024, 09:00 a 09:30**:
+   - Haz clic en el selector de tiempo (arriba a la derecha).
+   - Selecciona la pestaña **Absolute** y configura las fechas y horas exactas.
    - Pulsa **Update** para aplicar los cambios.
 
 Esto mostrará 21 eventos en ese marco de tiempo.
 
-2. Para analizar los eventos, añade las siguientes columnas desde el panel izquierdo:  
-   - **host.hostname**: Identifica las máquinas afectadas.  
-   - **user.name**: Muestra qué usuario ejecutó las acciones.  
-   - **event.category**: Clasifica los eventos por tipo.  
-   - **process.command_line**: Detalla los comandos ejecutados.  
+2. Para analizar los eventos, añade las siguientes columnas desde el panel izquierdo:
+   - **host.hostname**: Identifica las máquinas afectadas.
+   - **user.name**: Muestra qué usuario ejecutó las acciones.
+   - **event.category**: Clasifica los eventos por tipo.
+   - **process.command_line**: Detalla los comandos ejecutados.
    - **event.outcome**: Indica si la acción fue exitosa o fallida.
 
 Con estas columnas añadidas, los eventos se presentan de forma más clara, revelando actividades sospechosas de PowerShell en varias máquinas.
@@ -67,38 +67,40 @@ Con estas columnas añadidas, los eventos se presentan de forma más clara, reve
 
 Al observar los eventos, notamos un patrón interesante: la actividad de PowerShell ocurre en diferentes máquinas, y el tiempo entre los intentos de autenticación exitosos y los comandos de PowerShell es muy preciso. Esto genera sospechas, ya que las mejores prácticas sugieren que se utilicen cuentas personales para actividades administrativas, lo que permite atribución y responsabilidad claras. Sin embargo, en este caso, una cuenta genérica de administrador fue utilizada, algo que no es ideal. Los analistas nos confirmaron que esta cuenta es usada por dos administradores que **no estaban en la oficina durante este periodo**. Esto aumenta las sospechas de que algo está mal.
 
-Para continuar nuestra investigación, añadiremos la columna **source.ip** para identificar la dirección IP responsable de ejecutar los comandos PowerShell. Sin embargo, como este campo solo aparece en eventos de autenticación, filtraremos estos eventos para buscar un patrón. Para hacerlo:  
+Para continuar nuestra investigación, añadiremos la columna **source.ip** para identificar la dirección IP responsable de ejecutar los comandos PowerShell. Sin embargo, como este campo solo aparece en eventos de autenticación, filtraremos estos eventos para buscar un patrón. Para hacerlo:
 
 1. Filtra `event.category` = authentication.
 
 Al analizar los resultados no vemos ninguna información útil, por lo que quitamos este filtro que acabamos de poner.
 
-Dado que los eventos de autenticación pueden haber ocurrido antes del marco de tiempo original, expandimos nuestra búsqueda para incluir eventos desde el **29 de noviembre hasta el 1 de diciembre de 2024**. Al hacerlo:  
-- Encontramos **más de 6800 eventos** en este periodo.  
+Dado que los eventos de autenticación pueden haber ocurrido antes del marco de tiempo original, expandimos nuestra búsqueda para incluir eventos desde el **29 de noviembre hasta el 1 de diciembre de 2024**. Al hacerlo:
+
+- Encontramos **más de 6800 eventos** en este periodo.
 - Observamos un pico significativo al final del registro de eventos, pero no hay más actividad después de la ejecución exitosa de PowerShell.
 
-Para reducir aún más la búsqueda, aplicamos los filtros:  
-- **user.name: service_admin**  
-- **source.ip: 10.0.11.11**  
+Para reducir aún más la búsqueda, aplicamos los filtros:
+
+- **user.name: service_admin**
+- **source.ip: 10.0.11.11**
 
 ![Resultado](/images/blog/advent-of-cyber-2024/day2-img5.png)
 
-Esto nos muestra que todos los eventos provienen de la misma cuenta y dirección IP. Sin embargo, este patrón aún no explica el pico en los eventos. Para investigar más:  
-1. Filtramos eventos de autenticación nuevamente.  
+Esto nos muestra que todos los eventos provienen de la misma cuenta y dirección IP. Sin embargo, este patrón aún no explica el pico en los eventos. Para investigar más:
+
+1. Filtramos eventos de autenticación nuevamente.
 2. Excluimos la dirección IP (10.0.11.11) seleccionando el signo “-” junto a ella.
 
-Los resultados nos muestran que los eventos fallidos de autenticación aumentan notablemente, vinculados a una nueva dirección IP (terminada en .255.1).  
+Los resultados nos muestran que los eventos fallidos de autenticación aumentan notablemente, vinculados a una nueva dirección IP (terminada en .255.1).
 
-Eliminamos el filtro de dirección IP para concentrarnos en los eventos de autenticación cercanos al pico. 
+Eliminamos el filtro de dirección IP para concentrarnos en los eventos de autenticación cercanos al pico.
 
-Al revisar los registros, vemos que los intentos de inicio de sesión fallidos cesaron poco después de un inicio de sesión exitoso desde la nueva dirección IP.  
-
+Al revisar los registros, vemos que los intentos de inicio de sesión fallidos cesaron poco después de un inicio de sesión exitoso desde la nueva dirección IP.
 
 Habiendo analizado todo esto podemos llegar a la conclusión preliminar de que alguien parece haber realizado un ataque de fuerza bruta el **1 de diciembre de 2024**, logrando un inicio de sesión exitoso y ejecutando rápidamente comandos PowerShell en las máquinas afectadas. Una vez ejecutados los comandos, no hubo más intentos de inicio de sesión. Esto claramente apunta a un **True Positive (TP)**, y es momento de escalar el incidente para que **McSkidy** nos ayude a responder ante esta amenaza.
 
 ---
 
-### Paso 4: Confirmando el ataque y decodificando el comando 
+### Paso 4: Confirmando el ataque y decodificando el comando
 
 Ahora que sabemos que los comandos de PowerShell fueron ejecutados tras una autenticación exitosa, necesitamos analizar exactamente qué hicieron. En este caso, el comando está codificado, por lo que no podemos interpretarlo directamente.
 
@@ -123,7 +125,6 @@ El análisis revela que **Glitch**, inicialmente sospechoso, no solo accedió al
 
 Para completar este segundo desafío del calendario de adviento de TryHackMe, tendrás que responder las siguientes preguntas. A continuación, te explico cómo puedes encontrar cada respuesta sin dar directamente las soluciones.
 
-
 #### 1️⃣ **¿Cuál es el nombre de la cuenta que causó todos los intentos fallidos de inicio de sesión?**
 
 💡 **Pista**: Filtra los resultados por `event.outcome = failure`. La respuesta estará en el campo `user.name`.
@@ -131,7 +132,6 @@ Para completar este segundo desafío del calendario de adviento de TryHackMe, te
 ```cmd
 *************
 ```
-
 
 #### 2️⃣ **¿Cuántos intentos fallidos de inicio de sesión fueron observados?**
 
@@ -141,7 +141,6 @@ Para completar este segundo desafío del calendario de adviento de TryHackMe, te
 ****
 ```
 
-
 #### 3️⃣ **¿Cuál es la dirección IP de Glitch?**
 
 💡 **Pista**: Es la que ataca con fuerza bruta y produce el pico de solicitudes.
@@ -149,7 +148,6 @@ Para completar este segundo desafío del calendario de adviento de TryHackMe, te
 ```bash
 **.*.***.*
 ```
-
 
 #### 4️⃣ **¿Cuándo Glitch inició sesión exitosamente en ADM-01?**
 
@@ -162,7 +160,6 @@ Para completar este segundo desafío del calendario de adviento de TryHackMe, te
 #### 5️⃣ **¿Cuál es el comando decodificado ejecutado por Glitch para arreglar los sistemas de Wareville?**
 
 💡 **Pista**: [Vuelve a leer el paso 4](#paso-4-confirmando-el-ataque-y-decodificando-el-comando)
-
 
 ```bash
 ********************* ********** ***********
@@ -177,4 +174,3 @@ Este ejercicio muestra la importancia de analizar cada alerta con detalle, ya qu
 ---
 
 ¡Gracias por participar en este reto! ¿Qué opinas de la conclusión de este caso? ¿Crees que el Alcalde Malware sigue siendo sospechoso? ¡Déjanos tus teorías y nos vemos mañana para el próximo desafío!
-

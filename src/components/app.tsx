@@ -1,16 +1,16 @@
-import React, { PropsWithChildren } from "react";
-import SiteHeader from "@/components/site-header";
-import { siteConfig } from "@/config/site";
-import Link from "next/link";
+import React, { PropsWithChildren } from 'react';
+import SiteHeader from '@/components/site-header';
+import { siteConfig } from '@/config/site';
+import Link from 'next/link';
 
 export default function App({ children }: PropsWithChildren) {
   return (
     <div className="flex min-h-dvh flex-col space-y-6">
       <SiteHeader />
       <main className="container flex-1">{children}</main>
-      <footer className=" container border-t border-t-secondary/60 py-3 text-center">
+      <footer className="container border-t border-t-secondary/60 py-3 text-center">
         <p className="text-xs text-muted-foreground">
-          &copy; 2024 Creado por{" "}
+          &copy; 2024 Creado por{' '}
           <Link
             target="_blank"
             rel="noreferrer"
@@ -18,7 +18,7 @@ export default function App({ children }: PropsWithChildren) {
             className="text-primary"
           >
             {siteConfig.author}
-          </Link>{" "}
+          </Link>{' '}
         </p>
       </footer>
     </div>

@@ -1,22 +1,22 @@
-import { defineCollection, defineConfig, s } from "velite";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypePrettyCode from "rehype-pretty-code";
-import rehypeSlug from "rehype-slug";
+import { defineCollection, defineConfig, s } from 'velite';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypePrettyCode from 'rehype-pretty-code';
+import rehypeSlug from 'rehype-slug';
 
 const computedFields = <T extends { slug: string }>(data: T) => ({
   ...data,
-  slugAsParams: data.slug.split("/").slice(1).join("/"),
+  slugAsParams: data.slug.split('/').slice(1).join('/'),
 });
 
 const blogs = defineCollection({
-  name: "Blog",
-  pattern: "blog/**/*.mdx",
+  name: 'Blog',
+  pattern: 'blog/**/*.mdx',
   schema: s
-        .object({
+    .object({
       slug: s.path(),
       title: s.string().max(99),
       description: s.string().max(999),
-      category: s.string().default("General"),
+      category: s.string().default('General'),
       tag: s.array(s.string()).optional(),
       date: s.isodate(),
       published: s.boolean().default(true),
@@ -29,26 +29,26 @@ const blogs = defineCollection({
 });
 
 export default defineConfig({
-  root: "./src/content",
+  root: './src/content',
   output: {
-    data: ".velite",
-    assets: "public/static",
-    base: "/static/",
-    name: "[name]-[hash:6].[text]",
+    data: '.velite',
+    assets: 'public/static',
+    base: '/static/',
+    name: '[name]-[hash:6].[text]',
     clean: true,
   },
   collections: { blogs },
   mdx: {
     rehypePlugins: [
       rehypeSlug as any,
-      [rehypePrettyCode, { theme: "dracula" }],
+      [rehypePrettyCode, { theme: 'dracula' }],
       [
         rehypeAutolinkHeadings,
         {
-          behavior: "wrap",
+          behavior: 'wrap',
           properties: {
-            className: ["subheading-anchor"],
-            ariaLabel: "Link to section",
+            className: ['subheading-anchor'],
+            ariaLabel: 'Link to section',
           },
         },
       ],

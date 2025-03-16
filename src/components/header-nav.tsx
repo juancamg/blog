@@ -1,9 +1,9 @@
-"use client";
-import React from "react";
-import { NAV_LIST } from "@/constants";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+'use client';
+import React from 'react';
+import { NAV_LIST } from '@/constants';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { useSelectedLayoutSegment } from 'next/navigation';
 
 export default function HeaderNav() {
   const segment = useSelectedLayoutSegment();
@@ -14,10 +14,10 @@ export default function HeaderNav() {
           key={item.label + item.path}
           href={item.path}
           className={cn(
-            " font-normal hover:text-primary transition-colors flex items-center",
+            'flex items-center font-normal transition-colors hover:text-primary',
             `/${segment}` === item.path
-              ? "text-primary"
-              : "text-muted-foreground",
+              ? 'text-primary'
+              : 'text-muted-foreground'
           )}
         >
           <item.icon className="mr-2 size-4" />

@@ -1,11 +1,11 @@
 ---
-title: "AoC 2024: Día 1 - Analizando archivos sospechosos 🔍"
-description: "Resolvemos el reto del día 1 en el Advent of Cyber 2024 organizado por TryHackMe."
-image: "/images/blog/advent-of-cyber-2024/thumbnails/day1.png"
-date: "2024-12-01"
-author: "xhetic"
-tag: ["TryHackMe", "Principiante", "OPSEC", "Advent of Cyber"]
-category: "Writeups"
+title: 'AoC 2024: Día 1 - Analizando archivos sospechosos 🔍'
+description: 'Resolvemos el reto del día 1 en el Advent of Cyber 2024 organizado por TryHackMe.'
+image: '/images/blog/advent-of-cyber-2024/thumbnails/day1.png'
+date: '2024-12-01'
+author: 'xhetic'
+tag: ['TryHackMe', 'Principiante', 'OPSEC', 'Advent of Cyber']
+category: 'Writeups'
 featured: true
 ---
 
@@ -71,12 +71,11 @@ file somg.mp3
 Y la respuesta obtenida es
 
 ```bash
-somg.mp3: MS Windows shortcut, Item id list present, Points to a file or directory, Has Relative path, Has Working directory, Has command line arguments, Archive, 
+somg.mp3: MS Windows shortcut, Item id list present, Points to a file or directory, Has Relative path, Has Working directory, Has command line arguments, Archive,
 ctime=Sat Sep 15 07:14:14 2018, mtime=Sat Sep 15 07:14:14 2018, atime=Sat Sep 15 07:14:14 2018, length=448000, window=hide
 ```
 
 **🧐 Sorpresa**: ¡Es un archivo **.lnk** (acceso directo) disfrazado de MP3!
-
 
 ---
 
@@ -93,7 +92,6 @@ El resultado revela un comando **PowerShell** oculto que descarga y ejecuta un s
 - **-ep Bypass -nop**: Evita restricciones de seguridad.
 - **DownloadFile**: Utiliza este método para descargar el script [IS.ps1](https://raw.githubusercontent.com/MM-WarevilleTHM/IS/refs/heads/main/IS.ps1)
 - **iex**: Ejecuta el script tras descargarlo.
-
 
 ---
 
@@ -113,7 +111,6 @@ Accede al [resultado de búsqueda en GitHub](https://github.com/Bloatware-Warevi
 
 Para completar este primer desafío del calendario de adviento de TryHackMe, tendrás que responder las siguientes preguntas. A continuación, te explico cómo puedes encontrar cada respuesta sin dar directamente las soluciones.
 
-
 #### 1️⃣ **¿Quién es el autor de la canción (`song.mp3`)?**
 
 💡 **Pista**: Ejecuta `exiftool song.mp3` en tu terminal. La respuesta estará en el campo `Artist`.
@@ -121,7 +118,6 @@ Para completar este primer desafío del calendario de adviento de TryHackMe, ten
 ```cmd
 T**** R******
 ```
-
 
 #### 2️⃣ **¿Cuál es la URL del servidor C2 al que el script malicioso envía la información robada?**
 
@@ -138,7 +134,6 @@ function Send-InfoToC2Server {
 }
 ```
 
-
 #### 3️⃣ **¿Quién es M.M?**
 
 💡 **Pista**: Busca el [repositorio](https://github.com/JoshuaFerando/Mayor-Malware) coincidente con la firma **"Created by the one and only M.M."** en GitHub usando la barra de búsqueda.
@@ -146,7 +141,6 @@ function Send-InfoToC2Server {
 ```bash
 🦹‍♂️ Hi, I’m M.M, also known as M**** M******. I run things in Wareville Town.
 ```
-
 
 #### 4️⃣ **¿Cuántos commits tiene el repositorio donde se reportó el problema?**
 

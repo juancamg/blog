@@ -1,19 +1,19 @@
-import React from "react";
-import { Metadata } from "next";
-import { blogs as allBlogs } from "#site/content";
-import { cn, formatDate } from "@/lib/utils";
-import "@/styles/mdx.css";
-import Image from "next/image";
-import { siteConfig } from "@/config/site";
-import { Mdx } from "@/components/mdx-component";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import React from 'react';
+import { Metadata } from 'next';
+import { blogs as allBlogs } from '#site/content';
+import { cn, formatDate } from '@/lib/utils';
+import '@/styles/mdx.css';
+import Image from 'next/image';
+import { siteConfig } from '@/config/site';
+import { Mdx } from '@/components/mdx-component';
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
 
 // Función para obtener el blog desde los parámetros
 async function getBlogFromParams(params: Promise<{ slug: string[] }>) {
   const resolvedParams = await params; // Resolvemos el Promise
-  const slug = resolvedParams.slug.join("/");
+  const slug = resolvedParams.slug.join('/');
   const blog = allBlogs.find((blog) => blog.slugAsParams === slug);
 
   if (!blog) {
@@ -26,7 +26,7 @@ async function getBlogFromParams(params: Promise<{ slug: string[] }>) {
 // Generar parámetros estáticos para las rutas dinámicas
 export async function generateStaticParams() {
   return allBlogs.map((blog) => ({
-    slug: blog.slugAsParams.split("/"),
+    slug: blog.slugAsParams.split('/'),
   }));
 }
 
@@ -80,7 +80,7 @@ export default async function BlogPage({
         </h1>
 
         {blog.author && (
-          <div className="mt-4 flex justify-between items-center">
+          <div className="mt-4 flex items-center justify-between">
             <div className="flex space-x-4">
               <Image
                 src={siteConfig.authorImage}
@@ -102,7 +102,7 @@ export default async function BlogPage({
                 {blog.tag.slice(0, 3).map((tag) => (
                   <span
                     key={tag}
-                    className="inline-block bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-sm"
+                    className="inline-block rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground"
                   >
                     {tag}
                   </span>
@@ -127,7 +127,7 @@ export default async function BlogPage({
         <div className="flex justify-center py-6 lg:py-10">
           <Link
             href="/blog"
-            className={cn(buttonVariants({ variant: "ghost" }))}
+            className={cn(buttonVariants({ variant: 'ghost' }))}
             legacyBehavior
           >
             <a className="flex items-center">

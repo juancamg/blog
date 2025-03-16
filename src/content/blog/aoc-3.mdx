@@ -1,11 +1,11 @@
 ---
-title: "AoC 2024: Día 3 - Análisis de Logs 🔍"
-description: "Resolvemos el reto del día 3 en el Advent of Cyber 2024 organizado por TryHackMe."
-image: "/images/blog/advent-of-cyber-2024/thumbnails/day3.png"
-date: "2024-12-03"
-author: "xhetic"
-tag: ["TryHackMe", "Principiante", "Logs", "ELK", "Advent of Cyber"]
-category: "Writeups"
+title: 'AoC 2024: Día 3 - Análisis de Logs 🔍'
+description: 'Resolvemos el reto del día 3 en el Advent of Cyber 2024 organizado por TryHackMe.'
+image: '/images/blog/advent-of-cyber-2024/thumbnails/day3.png'
+date: '2024-12-03'
+author: 'xhetic'
+tag: ['TryHackMe', 'Principiante', 'Logs', 'ELK', 'Advent of Cyber']
+category: 'Writeups'
 featured: false
 ---
 
@@ -74,8 +74,7 @@ message: "shell.php"
 
 ¡Bingo! Encuentro la ruta donde se subió la web shell: `/media/images/rooms/shell.php`. También descubro que la IP atacante es `10.11.83.34`. Con esta información, ya tengo una idea clara de cómo se llevó a cabo el ataque.
 
-![Captura de pantalla](/images/blog/advent-of-cyber-2024/day3-img1.png)
----
+## ![Captura de pantalla](/images/blog/advent-of-cyber-2024/day3-img1.png)
 
 ## 🚩 Parte 3: Recreación del ataque (Operación Red)
 
@@ -122,6 +121,7 @@ Exploro el sistema con el comando `ls` y encuentro un archivo llamado `flag.txt`
 ```bash
 cat flag.txt
 ```
+
 ![Captura de pantalla](/images/blog/advent-of-cyber-2024/day3-img6.png)
 
 🎉 **Resultado:** La bandera es `THM{Gl1tch_Was_H3r3}`.

@@ -1,11 +1,11 @@
 ---
-title: "El Caso Joe Jacobs"
-description: "Analizamos el disquete de Joe Jacobs, un presunto traficante de drogas, para recuperar archivos ocultos y descubrir información clave sobre su proveedor y sus movimientos. Un caso sencillo de análisis forense digital con técnicas avanzadas."
-image: "/images/blog/caso-joe-jacobs/thumbnail.png"
-date: "2024-12-01"
-author: "xhetic"
-category: "Análisis Forense"
-tag: ["Autopsy", "File Carving", "Fragmentación"]
+title: 'El Caso Joe Jacobs'
+description: 'Analizamos el disquete de Joe Jacobs, un presunto traficante de drogas, para recuperar archivos ocultos y descubrir información clave sobre su proveedor y sus movimientos. Un caso sencillo de análisis forense digital con técnicas avanzadas.'
+image: '/images/blog/caso-joe-jacobs/thumbnail.png'
+date: '2024-12-01'
+author: 'xhetic'
+category: 'Análisis Forense'
+tag: ['Autopsy', 'File Carving', 'Fragmentación']
 featured: true
 ---
 
@@ -14,9 +14,11 @@ featured: true
 En este artículo, exploraremos un caso práctico que combina técnicas avanzadas de análisis forense digital y OSINT, donde se utilizó la recuperación de datos fragmentados para extraer evidencia clave. El escenario ficticio presenta a Joe Jacobs, arrestado por presunta venta de drogas en escuelas secundarias. Vamos a desglosar el proceso de investigación.
 
 ## Contexto del Caso
+
 Joe Jacobs fue detenido tras ser observado realizando transacciones sospechosas en la Escuela Secundaria Smith Hill. Sin embargo, la policía sospecha que Jacobs podría estar involucrado en otras instituciones y busca identificar a su proveedor.
 
 ## Objetivos de la Investigación
+
 1. **Identificar al proveedor de Joe Jacobs**.
 2. **Determinar si otras escuelas secundarias están implicadas**.
 3. **Recuperar archivos ocultos o fragmentados**.
@@ -25,25 +27,31 @@ Joe Jacobs fue detenido tras ser observado realizando transacciones sospechosas 
 ## Análisis Forense del Disquete
 
 ### Extracción de la Imagen Fragmentada
+
 Se descubrió un archivo `coverpage.jpg` fragmentado en el disquete. Utilizando **file carving**, se buscaron las firmas hexadecimales:
+
 - Inicio: `FF D8 FF` (sector 9200).
 - Fin: `FF D9` (sector CEE0).
 
-Una vez recuperada, la imagen mostró información clave sobre el proveedor. 
+Una vez recuperada, la imagen mostró información clave sobre el proveedor.
 
 ![Anuncio Jimmy Jungle](/images/blog/caso-joe-jacobs/image1.png)
 
 ### Recuperación del Archivo ZIP
+
 Para acceder al horario de Jacobs:
+
 - Cabecera ZIP: `50 4B 03 04` (sector D000).
 - Cola ZIP: `50 4B 05 06` (sector D960).
 
-Tras extraerlo, se encontró un archivo `.xls` protegido con contraseña. La búsqueda de entradas como “password” permitió encontrar la clave. 
+Tras extraerlo, se encontró un archivo `.xls` protegido con contraseña. La búsqueda de entradas como “password” permitió encontrar la clave.
 
 ![Captura recuparación](/images/blog/caso-joe-jacobs/image2.png)
 
 ## Conclusión del Análisis
+
 La investigación demostró que Jacobs utilizó fragmentación para dificultar la recuperación de archivos. Sin embargo, las técnicas forenses permitieron:
+
 - **Identificar al proveedor: Jimmy Jungle** en `626 Jungle Ave, Apt 2, Jungle NY 11111`.
 - **Confirmar visitas a otras escuelas** a través de su horario.
 
