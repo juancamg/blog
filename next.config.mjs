@@ -2,6 +2,7 @@ import { build } from "velite";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",
   webpack: (config) => {
     config.plugins.push(new VeliteWebpackPlugin());
     return config;

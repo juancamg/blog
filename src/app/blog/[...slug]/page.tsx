@@ -28,6 +28,12 @@ async function getBlogFromParams(params: BlogPageItemProps["params"]) {
   return blog;
 }
 
+export async function generateStaticParams() {
+  return allBlogs.map((blog) => ({
+    slug: blog.slugAsParams.split("/"), // Convierte el slug en un array para [...slug]
+  }));
+}
+
 export async function generateMetadata({
   params,
 }: BlogPageItemProps): Promise<Metadata> {
@@ -114,7 +120,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
         )}
         <Mdx code={blog.body} />
         <hr className="mt-12" />
-                <div className="flex justify-center py-6 lg:py-10">
+        <div className="flex justify-center py-6 lg:py-10">
           <Link href="/blog" className={cn(buttonVariants({ variant: "ghost" }))} legacyBehavior>
             <a className="flex items-center">
               <ChevronLeft className="mr-2 size-4" />
