@@ -6,6 +6,7 @@ import { siteConfig } from '@/config/site';
 import HeaderNav from '@/components/header-nav';
 import { Button } from '@/components/ui/button';
 import MobileNav from '@/components/mobile-nav';
+import ThemeToggle from '@/components/theme-toggle';
 
 export default function SiteHeader() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -19,6 +20,7 @@ export default function SiteHeader() {
         </div>
         <div className="flex items-center space-x-5 md:space-x-6">
           <HeaderNav />
+          <ThemeToggle />
           <Button
             variant="ghost"
             className="p-0 text-primary hover:bg-transparent hover:text-primary md:hidden"
@@ -33,6 +35,7 @@ export default function SiteHeader() {
               <span className="sr-only">Menu</span>
             </>
           </Button>
+          
         </div>
       </div>
       {isMobileOpen && (

@@ -38,7 +38,7 @@ export default function Blog() {
   });
 
   return (
-    <div className="container max-w-4xl py-6 lg:py-10">
+    <div className="container max-w-5xl py-6 lg:py-10">
       <PageHeader title="Todas las Publicaciones" />
       <hr className="my-8" />
 

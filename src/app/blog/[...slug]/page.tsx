@@ -10,9 +10,8 @@ import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 
-// Función para obtener el blog desde los parámetros
 async function getBlogFromParams(params: Promise<{ slug: string[] }>) {
-  const resolvedParams = await params; // Resolvemos el Promise
+  const resolvedParams = await params; 
   const slug = resolvedParams.slug.join('/');
   const blog = allBlogs.find((blog) => blog.slugAsParams === slug);
 
@@ -23,18 +22,16 @@ async function getBlogFromParams(params: Promise<{ slug: string[] }>) {
   return blog;
 }
 
-// Generar parámetros estáticos para las rutas dinámicas
 export async function generateStaticParams() {
   return allBlogs.map((blog) => ({
     slug: blog.slugAsParams.split('/'),
   }));
 }
 
-// Generar metadatos para la página
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string[] }>; // Cambiamos a Promise
+  params: Promise<{ slug: string[] }>; 
 }): Promise<Metadata> {
   const blog = await getBlogFromParams(params);
 
@@ -51,11 +48,10 @@ export async function generateMetadata({
   };
 }
 
-// Componente de la página
 export default async function BlogPage({
   params,
 }: {
-  params: Promise<{ slug: string[] }>; // Cambiamos a Promise
+  params: Promise<{ slug: string[] }>;
 }) {
   const blog = await getBlogFromParams(params);
 
@@ -64,7 +60,7 @@ export default async function BlogPage({
   }
 
   return (
-    <article className="container relative max-w-3xl py-6 lg:py-10">
+    <article className="container relative max-w-5xl py-6 lg:py-10">
       <div>
         {blog.date && (
           <time
