@@ -10,7 +10,7 @@ export default function App({ children }: PropsWithChildren) {
       <main className="container flex-1">{children}</main>
       <footer className="container border-t border-t-secondary/60 py-3 text-center">
         <p className="text-xs text-muted-foreground">
-          &copy; 2024 Creado por{' '}
+          &copy; 2025 Creado por{' '}
           <Link
             target="_blank"
             rel="noreferrer"

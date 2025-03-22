@@ -1,8 +1,24 @@
 {
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
   "extends": [
     "next/core-web-vitals",
-    "standard",
-    "plugin:tailwindcss/recommended",
-    "prettier"
+    "plugin:tailwindcss/recommended"
+  ],
+  "rules": {
+    "no-new-func": "off", 
+    "@next/next/no-img-element": "off", 
+    "tailwindcss/classnames-order": "off" 
+  },
+  "overrides": [
+    {
+      "files": ["src/components/mdx-component.tsx"],
+      "rules": {
+        "no-new-func": "off"
+      }
+    }
   ]
 }
