@@ -1,0 +1,156 @@
+---
+title: 'Information Gathering CTF 1 (eJPT)'
+description: 'Primer CTF de la serie de Information Gathering de la preparación para el eJPT'
+image: '/images/blog/Information-gathering-CTF1/thumbnail.png'
+date: '2025-04-03'
+author: 'xhetic'
+tag: ['eJPT', 'Information Gathering', 'CTF', 'Pasivo', 'Activa']
+featured: true
+category: 'Laboratorios'
+published: true
+---
+
+# Reconocimiento en el Laboratorio de Information Gathering de INE
+
+## Contexto
+
+Este laboratorio se realiza tras completar el curso [*Assessment Methodologies: Information Gathering*](https://my.ine.com/CyberSecurity/courses/454b33b7/assessment-methodologies-information-gathering) ofrecido por INE. Proporciona una base teórica sólida sobre técnicas de recolección de información en ciberseguridad.
+
+Para complementar este laboratorio, se recomienda consultar los apuntes detallados del curso en [*Xhetic Shards*](https://xhetic-shards.vercel.app/certs/ejptv2/information-gathering/introduction.html). Ofrecen explicaciones paso a paso sobre los conceptos aplicados en este ejercicio práctico.
+
+## Entorno del Laboratorio
+
+El laboratorio consiste en analizar un sitio web accesible en `http://target.ine.local`. El objetivo es realizar un reconocimiento exhaustivo para identificar y capturar cinco *flags* específicas:
+
+- **Flag 1:** Indica a los motores de búsqueda qué indexar y qué evitar.
+- **Flag 2:** Revela qué software de sitio web ejecuta el objetivo y su versión.
+- **Flag 3:** Permite descubrir dónde se almacenan archivos mediante exploración de directorios.
+- **Flag 4:** Expone un archivo olvidado en la raíz del sitio que puede contener configuraciones sensibles.
+- **Flag 5:** Requiere reflejar el sitio para encontrar detalles interesantes en archivos específicos.
+
+
+## Herramientas Utilizadas
+
+Este laboratorio emplea las siguientes herramientas:
+
+- **Firefox:** Navegador web que permite inspeccionar páginas y acceder a recursos en línea.
+- **Curl:** Herramienta de línea de comandos que realiza solicitudes HTTP para obtener datos de un servidor.
+- **Dirb:** Herramienta que enumera directorios y archivos en un servidor web mediante solicitudes HTTP.
+- **HTTrack:** Software que descarga un sitio web completo para analizarlo localmente.
+
+## Resolución del Laboratorio
+
+A continuación, se detalla el proceso para capturar cada *flag*. Cada paso incluye una explicación clara de las herramientas y técnicas utilizadas, acompañada de capturas que ilustran los resultados.
+
+### Flag 1: Archivo robots.txt
+
+El primer *flag* se encuentra en el archivo `robots.txt`. Este archivo reside en la raíz del sitio y contiene instrucciones para los motores de búsqueda sobre qué indexar y qué excluir. Para obtenerlo, se utiliza Curl con el comando:
+
+```bash
+curl http://target.ine.local/robots.txt
+```
+
+El comando envía una solicitud HTTP GET y muestra el contenido del archivo, revelando la *flag*. La captura siguiente ilustra este proceso:
+
+![Comando Curl al archivo robots.txt](/images/blog/Information-gathering-CTF1/flag1.png)
+
+Este paso es útil porque expone áreas del sitio que podrían estar destinadas a permanecer ocultas.
+
+### Flag 2: Identificación del Software y Versión con Whatweb
+
+El segundo *flag* requiere determinar qué software ejecuta el sitio web y su versión. Whatweb analiza el sitio y detecta tecnologías subyacentes examinando encabezados HTTP y contenido HTML. Se ejecuta el comando:
+
+```bash
+whatweb http://target.ine.local
+```
+
+El resultado muestra el software (como WordPress o Apache) y su versión, junto con la *flag*. La captura siguiente presenta esta salida:
+
+![Resultado del comando Whatweb](/images/blog/Information-gathering-CTF1/flag2.png)
+
+Conocer esta información permite identificar posibles vulnerabilidades asociadas al software detectado.
+
+### Flag 3: Exploración de Directorios con Dirb
+
+El tercer *flag* se obtiene explorando directorios del sitio. Dirb envía solicitudes HTTP a rutas comunes para descubrir directorios accesibles. Se ejecuta con:
+
+```bash
+dirb http://target.ine.local
+```
+
+La salida identifica `http://target.ine.local/wp-content/uploads` como un directorio listable, lo que significa que el servidor muestra su contenido. La captura siguiente muestra este resultado:
+
+![Resultado de Dirb mostrando directorio listable](/images/blog/Information-gathering-CTF1/flag3-1.png)
+
+Para confirmarlo, se accede a `http://target.ine.local/wp-content/uploads` en Firefox, revelando archivos disponibles y la *flag*. La captura siguiente ilustra esta visita:
+
+![Visita al directorio wp-content/uploads](/images/blog/Information-gathering-CTF1/flag3-2.png)
+
+Este hallazgo es valioso porque los directorios listables pueden exponer recursos sensibles.
+
+### Flag 4: Búsqueda de Archivos de Respaldo con Dirb
+
+El cuarto *flag* implica localizar un archivo de respaldo en la raíz del sitio. Dirb, ejecutado previamente, encuentra `http://target.ine.local/` con un archivo accesible que contiene configuraciones sensibles. La captura siguiente muestra este descubrimiento:
+
+![Resultado de Dirb encontrando archivo en la raíz](/images/blog/Information-gathering-CTF1/flag4.png)
+
+Acceder a este archivo revela la *flag*. Este tipo de archivos olvidados es crítico, ya que puede exponer información confidencial del servidor.
+
+### Flag 5: Reflejo del Sitio con HTTrack
+
+El quinto *flag* requiere reflejar el sitio web con HTTrack para analizarlo localmente. Se ejecuta:
+
+```bash
+httrack http://target.ine.local
+```
+
+HTTrack descarga todos los archivos del sitio en un directorio local. Existen dos métodos para encontrar la *flag*:
+
+1. **Búsqueda Manual:** Se revisan los archivos descargados uno por uno. En este caso, la *flag* se encuentra en `xmlrpc0db0.php`. La captura siguiente muestra este hallazgo:
+
+   ![Flag encontrada manualmente en xmlrpc0db0.php](/images/blog/Information-gathering-CTF1/flag5-1.png)
+
+   Este método requiere inspeccionar cada archivo, lo que es efectivo pero consume tiempo.
+
+2. **Búsqueda Automatizada:** Se utiliza un comando para filtrar archivos que contengan "FLAG5". En el directorio local, se ejecuta:
+
+   ```bash
+   ls -R | grep -r -i "FLAG5" .
+   ```
+
+   - `ls -R` lista recursivamente todos los archivos y subdirectorios.
+   - `grep -r -i "FLAG5" .` busca "FLAG5" en el contenido de los archivos, ignorando mayúsculas/minúsculas (`-i`) y explorando recursivamente (`-r`) desde el directorio actual (`.`).
+   - La salida filtra y muestra automáticamente la ubicación de la *flag* en `xmlrpc0db0.php`.
+
+   La captura siguiente presenta este resultado:
+
+   ![Resultado del comando grep encontrando FLAG5](/images/blog/Information-gathering-CTF1/flag5-2.png)
+
+   Este enfoque automatizado ahorra tiempo y es ideal para directorios con muchos archivos.
+
+
+## Resultados Finales: Flags Capturadas
+
+Tras completar el reconocimiento, se capturan las cinco *flags*:
+
+- **FLAG1:** `FLAG1{90bc112607c9499daee12d9adfd327cb}`  
+  Obtenida con Curl en `robots.txt`.
+- **FL@G2:** `FL@G2{0afa4a6d83034250b952ce92d11f779d}`  
+  Identificada con Whatweb.
+- **FLAG3:** `FLAG3{da2814deb3e74863ad089308e9e1b9a0}`  
+  Descubierta en el directorio listable `wp-content/uploads` con Dirb y Firefox.
+- **FLAG4:** `FLAG4{b8afaf2dafe447cfbaf0b5411f21c73e}`  
+  Localizada en una copia de seguridad expuesta en la raíz con Dirb.
+- **FLAG5:** `FLAG5{f279ab0163834526841a6b76c95b8fa5}`  
+  Encontrada en `xmlrpc0db0.php` tras reflejar el sitio con HTTrack.
+
+
+## Recursos Adicionales
+
+Para profundizar en las herramientas utilizadas, se recomienda consultar las guías en [*Xhetic Shards*](https://xhetic-shards.vercel.app/):
+- [*Whatweb*](https://xhetic-shards.vercel.app/whatweb): Explica cómo identificar tecnologías web.
+- [*Dirb*](https://xhetic-shards.vercel.app/dirb): Describe su uso para enumerar directorios.
+- [*HTTrack*](https://xhetic-shards.vercel.app/HTTrack): Detalla cómo reflejar sitios para análisis local.
+
+
+Este laboratorio demuestra cómo aplicar técnicas de recolección de información para identificar vulnerabilidades en un entorno web, utilizando herramientas accesibles y métodos tanto manuales como automatizados.

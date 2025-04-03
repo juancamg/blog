@@ -10,13 +10,10 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const CATEGORIES = [
   'Todas las categorías',
-  'Writeups',
-  'Retos',
+  'Laboratorios',
   'OSINT',
   'Análisis Forense',
   'Criptografía',
-  'Noticias & Tendencias',
-  'Herramientas',
   'General',
 ];
 
