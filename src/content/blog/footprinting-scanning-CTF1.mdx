@@ -1,0 +1,224 @@
+---
+title: 'Footprinting and Scanning CTF 1 (eJPT)'
+description: 'Primer CTF de la serie de Footprinting and Scanning de la preparación para el eJPT'
+image: '/images/blog/Footprinting-scanning-CTF1/thumbnail.png'
+date: '2025-04-16'
+author: 'xhetic'
+tag: ['eJPT', 'Footprinting', 'CTF', 'Scanning', 'nmap']
+featured: true
+category: 'Laboratorios'
+published: true
+---
+
+# Assessment Methodologies: Footprinting and Scanning CTF 1
+
+Mientras avanzamos en el curso *Assessment Methodologies: Footprinting and Scanning*, parte del *Penetration Testing Student learning Path* para la certificación eJPT, nos encontramos con este laboratorio práctico: **Footprinting and Scanning CTF 1**.
+
+Este artículo detalla la resolución del laboratorio, compartiendo mi proceso de pensamiento, pruebas y reflexiones mientras buscaba las cuatro flags requeridas. Mi objetivo es que esta guía sea útil para quienes estén trabajando en este desafío y deseen seguir un enfoque claro, pero también humano, con los errores y aciertos que surgen al resolverlo.
+
+Si estás interesado en los apuntes que he ido tomando durante este curso, los he publicado en [Xhetic Shards](https://xhetic-shards.vercel.app/certs/ejptv2/footprinting-scanning/introduction.html). Espero que te sirvan para complementar tu aprendizaje.
+
+
+
+## Herramientas que vamos a utilizar
+
+Para resolver este laboratorio, emplearemos las siguientes herramientas, cada una con un propósito específico:
+
+- **Curl**: Herramienta de línea de comandos que permite realizar solicitudes HTTP para obtener datos de un servidor.
+- **Nmap**: Herramienta de exploración de red y escaneo de puertos que identifica hosts, servicios y configuraciones en una red.
+- **FTP**: Protocolo de transferencia de archivos que facilita el acceso a directorios remotos, a veces con opciones de conexión anónima.
+- **MySQL**: Sistema de gestión de bases de datos relacionales que usaremos para interactuar con servicios de bases de datos expuestos.
+
+
+
+## Entorno del laboratorio
+
+*This lab is designed to test your knowledge and skills in performing reconnaissance and identifying hidden information on a target web server.*
+
+En resumen, se trata de aplicar técnicas de footprinting y scanning para descubrir información oculta en un servidor web objetivo.
+
+
+
+## Objetivos
+
+El laboratorio nos reta a encontrar cuatro flags, cada una acompañada de una pista que guía el proceso:
+
+- **Flag 1**: "The server proudly announces its identity in every response. Look closely; you might find something unusual."
+- **Flag 2**: "The gatekeeper's instructions often reveal what should remain unseen. Don't forget to read between the lines."
+- **Flag 3**: "Anonymous access sometimes leads to forgotten treasures. Connect and explore the directory; you might stumble upon something valuable."
+- **Flag 4**: "A well-named database can be quite revealing. Peek at the configurations to discover the hidden treasure."
+
+
+
+## Resolución del laboratorio
+
+A continuación, detallo el proceso que he seguido para encontrar cada flag, siguiendo las pistas y compartiendo cómo fui razonando, probando ideas y ajustando mi enfoque cuando fue necesario.
+
+### Flag 1
+
+**Pista**: "The server proudly announces its identity in every response. Look closely; you might find something unusual."
+
+La pista sugiere que la flag está incrustada en las respuestas del servidor. Mi primer pensamiento fue en intentar obtener una respuesta del servidor para analizarla. La herramienta `curl` permite inspeccionar los encabezados de una solicitud al servidor objetivo:
+
+```bash
+curl -I target.ine.local
+```
+
+![Curl al servidor](/images/blog/footprinting-scanning-CTF1/flag1.png)
+
+
+¡Y ahí estaba! En los encabezados de la respuesta, encontré la flag, que comienza con `dd5bac`..
+
+
+---
+
+### Flag 2
+
+**Pista**: "The gatekeeper's instructions often reveal what should remain unseen. Don't forget to read between the lines."
+
+Esta pista suena como una adivinanza, y al principio me dejó pensando: "¿Quién es el gatekeeper? ¿Qué instrucciones podrían revelar algo oculto?". Tras reflexionar, recordé que en los servidores web, el archivo `robots.txt` actúa como un "guardián" que indica a los motores de búsqueda qué rutas no indexar. Este archivo a veces contiene información sensible por error.
+
+Accedí al archivo con mi navegador:
+
+```bash
+http://target.ine.local/robots.txt
+```
+
+Al revisarlo, veo que el archivo está configurado para no indexar la ruta `/secret-info/`. 
+
+![Captura de robots.txt](/images/blog/footprinting-scanning-CTF1/flag2-1.png)
+
+Esto me pareció curioso, así que lo busqué:
+
+```bash
+http://target.ine.local/secret-info/
+```
+
+La página mostró un índice de directorios con un archivo llamado `flag.txt`.
+
+![Captura de /secret-info/](/images/blog/footprinting-scanning-CTF1/flag2-2.png)
+
+
+La flag podemos encontrarla accediento a:
+
+```bash
+http://target.ine.local/secret-info/flag.txt
+```
+
+---
+
+### Flag 3
+
+**Pista**: "Anonymous access sometimes leads to forgotten treasures. Connect and explore the directory; you might stumble upon something valuable."
+
+La mención de "anonymous access" me hizo pensar en servicios que permiten conexiones sin autenticación estricta. Primero, exploré la web en busca de formularios de inicio de sesión o rutas comunes como `/wp-admin`, `/admin` o `/login`, pero no encontré nada relevante.
+
+Decidí realizar un escaneo de puertos para identificar servicios activos:
+
+```bash
+nmap -sS -p- -T4 target.ine.local
+```
+
+El resultado mostró 8 puertos abiertos.
+
+![Captura del resultado del comando](/images/blog/footprinting-scanning-CTF1/flag3-1.png)
+
+Recordé que los servidores FTP a menudo permiten acceso anónimo con el usuario `anonymous`. Quise probar esto manualmente, pero recordé que Nmap tiene un script para verificar acceso anónimo automáticamente. Busqué scripts relacionados con FTP:
+
+```bash
+ls /usr/share/nmap/scripts/ | grep -e "ftp"
+```
+
+![Captura del resultado del comando](/images/blog/footprinting-scanning-CTF1/flag3-2.png)
+
+Encontré el script `ftp-anon` que hace justo lo que buscamos. Ejecuté:
+
+```bash
+nmap --script=ftp-anon target.ine.local
+```
+
+El resultado confirmó que el acceso anónimo estaba habilitado y listó dos archivos: `creds.txt` y `flag.txt`.
+
+![Captura del resultado del comando](/images/blog/footprinting-scanning-CTF1/flag3-3.png)
+
+Para obtener la flag, usé:
+
+```bash
+curl ftp://target.ine.local/flag.txt --user anonymous:
+```
+
+El comando devolvió la flag directamente.
+
+---
+
+### Flag 4
+
+**Pista**: "A well-named database can be quite revealing. Peek at the configurations to discover the hidden treasure."
+
+Esta pista apunta a una base de datos con una configuración vulnerable. Del escaneo de puertos anterior, sabía que había un servicio MySQL en el puerto 3306. Mi primer instinto fue probar scripts de Nmap para MySQL:
+
+```bash
+nmap -p3306 -sC target.ine.local
+```
+
+Esperaba que los scripts predeterminados revelaran algo útil, pero la respuesta no contenía información relevante. Luego busqué scripts específicos para MySQL:
+
+```bash
+ls /usr/share/nmap/scripts/ | grep -e "mysql"
+```
+
+![Captura del resultado del comando](/images/blog/footprinting-scanning-CTF1/flag4-1.png)
+
+Para entender qué hacían, consulté su documentación con el comando:
+
+```bash
+nmap --script-help mysql-*
+```
+
+Tras probar varios scripts, no obtuve resultados útiles, y empezaba a sentirme estancado. Entonces, recordé que en el paso anterior, el servidor FTP tenía un archivo llamado `creds.txt` que no había revisado. Decidí comprobarlo:
+
+```bash
+curl ftp://target.ine.local/creds.txt --user anonymous:
+```
+
+¡Sorpresa! El archivo contenía credenciales que parecían ser para la base de datos. 
+
+![Captura del resultado del comando](/images/blog/footprinting-scanning-CTF1/flag4-2.png)
+
+Me emocioné, pero al intentar conectar a MySQL con:
+
+```bash
+mysql -h target.ine.local -u db_admin -ppassword@123
+```
+
+El servidor me bloqueó por "demasiadas conexiones". Me pareció extraño y pensé que alomejor el servidor MYSQL había bloqueado mis conexiones porque con los scripts de nmap he levantado sospechas. Reinicié el laboratorio para limpiar cualquier límite de conexión.
+
+Tras el reinicio, volví a intentar la conexión con las credenciales de `creds.txt`, y esta vez funcionó. Una vez dentro de MySQL, ejecuté:
+
+```sql
+SHOW DATABASES;
+```
+
+El resultado mostró la flag directamente en el nombre de una base de datos.
+
+![Captura del resultado del comando](/images/blog/footprinting-scanning-CTF1/flag4-3.png)
+
+La falta de seguridad en la configuración me sorprendió, pero fue un recordatorio de lo comunes que son estos errores.
+
+
+## Resultados Finales: Flags Capturadas
+
+Tras explorar, equivocarme y ajustar mi enfoque, completé el laboratorio con las siguientes flags:
+
+- **Flag 1**: `FLAG1_5caaa8c256ab42b6ac550162740d5a50`
+- **Flag 2**: `FLAG2_501bea2a778b4f5a88ff367e26334fe7`
+- **Flag 3**: `FLAG3_ff1a7b7ae077463c9bdd348d9d8ee7ca`
+- **Flag 4**: `FLAG4_d86a2cc81da54df7b23cd502313cee5e`
+
+---
+
+## Recursos adicionales
+
+Si quieres profundizar en las técnicas y herramientas usadas en este laboratorio, te recomiendo revisar la documentación que he preparado en mi blog **Xhetic Shards**. Por ejemplo, para aprender más sobre Nmap, consulta: [Xhetic Shards - nmap](https://xhetic-shards.vercel.app/tools/nmap.html).
+
+Espero que esta guía te haya ayudado a resolver el laboratorio *Footprinting and Scanning CTF 1* y a entender el proceso de pensamiento detrás de cada paso. ¡Ánimo en tu preparación para la certificación eJPT y en tus aventuras en ciberseguridad!
